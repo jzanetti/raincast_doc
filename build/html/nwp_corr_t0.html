@@ -1,0 +1,133 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Calculate the correlation for NWP at T0 &#8212; run_raincast_doc 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="calculate-the-correlation-for-nwp-at-t0">
+<h1>Calculate the correlation for NWP at T0<a class="headerlink" href="#calculate-the-correlation-for-nwp-at-t0" title="Permalink to this headline">¶</a></h1>
+<p>Similar to the radar extrapolation, the skills of NWP must be calculated at the analysis time (aginst the observation).</p>
+<div class="section" id="temporal-correlation">
+<h2>Temporal correlation<a class="headerlink" href="#temporal-correlation" title="Permalink to this headline">¶</a></h2>
+<p>Unlike radar extrapolation, there is no need to create the temporal correlation for NWP</p>
+</div>
+<div class="section" id="spatial-correlation">
+<h2>Spatial correlation<a class="headerlink" href="#spatial-correlation" title="Permalink to this headline">¶</a></h2>
+<p>The following codes give the spatial correlation for NWP forecast and radar observation at T0:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">run_in_parallel</span><span class="p">:</span>
+    <span class="n">dask_jobs</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cascade_levels</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">run_in_parallel</span><span class="p">:</span>
+        <span class="n">dask_jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dask</span><span class="o">.</span><span class="n">delayed</span><span class="p">(</span><span class="n">_get_rho</span><span class="p">)(</span>
+            <span class="n">model_data_at_steps_analysis_time</span><span class="p">,</span>
+            <span class="n">radar_data_at_steps_analysis_time</span><span class="p">,</span>
+            <span class="n">kk</span><span class="p">,</span> <span class="n">use_fss</span><span class="p">,</span>
+            <span class="n">hist_cli_dir</span><span class="p">,</span> <span class="n">cascade_grid</span><span class="p">,</span>
+            <span class="n">mask_model</span><span class="p">,</span> <span class="n">match_cdf</span><span class="p">,</span>
+            <span class="n">spatial_corr</span><span class="p">,</span> <span class="n">cur_corr_size</span><span class="p">,</span>
+            <span class="n">raincast_time</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cur_corr</span> <span class="o">=</span> <span class="n">_get_rho</span><span class="p">(</span>
+            <span class="n">model_data_at_steps_analysis_time</span><span class="p">,</span>
+            <span class="n">radar_data_at_steps_analysis_time</span><span class="p">,</span>
+            <span class="n">kk</span><span class="p">,</span> <span class="n">use_fss</span><span class="p">,</span> <span class="n">hist_cli_dir</span><span class="p">,</span> <span class="n">cascade_grid</span><span class="p">,</span>
+            <span class="n">mask_model</span><span class="p">,</span> <span class="n">match_cdf</span><span class="p">,</span>
+            <span class="n">spatial_corr</span><span class="p">,</span> <span class="n">cur_corr_size</span><span class="p">,</span>
+            <span class="n">raincast_time</span><span class="p">)</span>
+        <span class="n">r_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur_corr</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The correlations for NWP forecasts have to be calculated over all cascades.</p>
+<p>Here are the examples (with cascades 2, 4 and 6) of the spatial correlation over different cascades, we noticed that the skill is very little within the radar range (outside of the radar range it is better since the “ground truth” also comes from NWP)</p>
+<a class="reference internal image-reference" href="_images/corr_nwp_cascade2_202003090500.png"><img alt="_images/corr_nwp_cascade2_202003090500.png" src="_images/corr_nwp_cascade2_202003090500.png" style="width: 250px;" /></a>
+<a class="reference internal image-reference" href="_images/corr_nwp_cascade4_202003090500.png"><img alt="_images/corr_nwp_cascade4_202003090500.png" src="_images/corr_nwp_cascade4_202003090500.png" style="width: 250px;" /></a>
+<a class="reference internal image-reference" href="_images/corr_nwp_cascade6_202003090500.png"><img alt="_images/corr_nwp_cascade6_202003090500.png" src="_images/corr_nwp_cascade6_202003090500.png" style="width: 250px;" /></a>
+<p>The full gallery can be found here <code class="xref download docutils literal notranslate"><span class="pre">nwp</span> <span class="pre">correlation</span> <span class="pre">gallery</span></code>. Note that the output <em>rho_model</em> is a list with length of total <em>cascades</em>, within the list it is a 2d array having the dimension of <em>(x, y)</em>.</p>
+<p>Also, one might ask, given the “ground truth” outside of radar also comes from NWP, why the skill of NWP forecast is still very low. It is due to that the spatial skill is constrained by the domain average (within radar) skill, it must be within a range of, e.g., (-30%, +30%)</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Calculate the correlation for NWP at T0</a><ul>
+<li><a class="reference internal" href="#temporal-correlation">Temporal correlation</a></li>
+<li><a class="reference internal" href="#spatial-correlation">Spatial correlation</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/nwp_corr_t0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, sijin.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>

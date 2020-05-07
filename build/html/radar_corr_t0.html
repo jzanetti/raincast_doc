@@ -1,0 +1,175 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Calculate the correlation for radar at T0 &#8212; run_raincast_doc 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Calculate the correlation for NWP at T0" href="nwp_corr_t0.html" />
+    <link rel="prev" title="Data decomposition" href="decomposition.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="nwp_corr_t0.html" title="Calculate the correlation for NWP at T0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="decomposition.html" title="Data decomposition"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="calculate-the-correlation-for-radar-at-t0">
+<h1>Calculate the correlation for radar at T0<a class="headerlink" href="#calculate-the-correlation-for-radar-at-t0" title="Permalink to this headline">¶</a></h1>
+<p>The skills of radar extrapolation must be calculated at the analysis time.</p>
+<div class="section" id="temporal-correlation">
+<h2>Temporal correlation<a class="headerlink" href="#temporal-correlation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="using-correlations">
+<h3>Using correlations<a class="headerlink" href="#using-correlations" title="Permalink to this headline">¶</a></h3>
+<p>First the temporal correlation is estimated, from the previous section, we know that all the data in <em>R_radar_</em> are valid at the same time, while besides <em>R_radar[-1, :, :]</em>, all the rests are extrapolated forecasts:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rho_radar_tmp</span> <span class="o">=</span> <span class="n">correlation</span><span class="o">.</span><span class="n">temporal_autocorrelation</span><span class="p">(</span>
+            <span class="n">R_radar_</span><span class="p">,</span> <span class="n">MASK</span><span class="o">=</span><span class="n">MASK_thr</span><span class="p">)</span>
+<span class="n">rho_radar_tmp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.9798</span><span class="p">,</span> <span class="mf">0.9583</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-fss">
+<h3>Using FSS<a class="headerlink" href="#using-fss" title="Permalink to this headline">¶</a></h3>
+<p>The good thing of using FSS instead of correlation is that one can collect all the FSS parameters over previous cases, and come up with a more statistically stable skill. However, a threshold must be provided to generate the FSS score, here we use a pre-defined ratio of the maximum (<em>use_fss[‘thres_as_max_ratio’]</em>) value as the threshold</p>
+<p>For the initial skill of radar (at T0), we usually go back 12 hours to collect the FSS parameters and use them to create the FSS score:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rho_radar_tmp</span> <span class="o">=</span> <span class="n">raincast_fss</span><span class="o">.</span><span class="n">temporal_autocorrelation_fss</span><span class="p">(</span>
+    <span class="n">cascade_num</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">cascade_grid</span><span class="p">[</span><span class="n">cascade_num</span><span class="p">]),</span> <span class="n">R_radar_</span><span class="p">,</span>
+    <span class="n">use_fss</span><span class="p">[</span><span class="s1">&#39;thres_as_max_ratio&#39;</span><span class="p">],</span> <span class="n">use_fss</span><span class="p">[</span><span class="s1">&#39;grids&#39;</span><span class="p">],</span>
+    <span class="n">hist_cli_dir</span><span class="p">,</span> <span class="n">use_fss</span><span class="p">[</span><span class="s1">&#39;use_hist_fss_para&#39;</span><span class="p">],</span>
+    <span class="n">raincast_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H%M&#39;</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">timestep</span><span class="p">))</span>
+<span class="n">rho_radar_tmp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.9229</span><span class="p">,</span> <span class="mf">0.8935</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>For example <em>rho_radar_tmp[0]</em> is the skill from <em>R_radar[-2, :, :]</em> (1 hour extrapolation), and <em>rho_radar_tmp[1]</em> is the skill from <em>R_radar[-3, :, :]</em> (2 hour extrapolation)</p>
+</div>
+</div>
+<div class="section" id="spatial-correlation">
+<h2>Spatial correlation<a class="headerlink" href="#spatial-correlation" title="Permalink to this headline">¶</a></h2>
+<p>Since the skill of radar extrapolation is not constant over the entire domain, the spatial correlation is applied. It is constrained by the temporal correlation we estimated at the last step (here we can consider that the temporal correlation is the domain average correlation):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cascade_levels</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">run_in_parallel</span><span class="p">:</span>
+        <span class="n">dask_jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">dask</span><span class="o">.</span><span class="n">delayed</span><span class="p">(</span><span class="n">_get_rho</span><span class="p">)(</span>
+                <span class="n">i</span><span class="p">,</span> <span class="n">R_radar_cascades</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span> <span class="n">use_fss</span><span class="p">,</span> <span class="n">cascade_grid</span><span class="p">,</span>
+                <span class="n">hist_cli_dir</span><span class="p">,</span> <span class="n">raincast_time</span><span class="p">,</span> <span class="n">timestep</span><span class="p">,</span>
+                <span class="n">MASK_thr</span><span class="p">,</span> <span class="n">spatial_corr</span><span class="p">,</span> <span class="n">kmperpixel</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rho_radar</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">_get_rho</span><span class="p">(</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">R_radar_cascades</span><span class="p">,</span> <span class="n">ar_order</span><span class="p">,</span> <span class="n">use_fss</span><span class="p">,</span> <span class="n">cascade_grid</span><span class="p">,</span>
+            <span class="n">hist_cli_dir</span><span class="p">,</span> <span class="n">raincast_time</span><span class="p">,</span> <span class="n">timestep</span><span class="p">,</span>
+            <span class="n">MASK_thr</span><span class="p">,</span> <span class="n">spatial_corr</span><span class="p">,</span> <span class="n">kmperpixel</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">run_in_parallel</span><span class="p">:</span>
+    <span class="n">dask_out</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="o">*</span><span class="n">dask_jobs</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;multiprocessing&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cascade_levels</span><span class="p">):</span>
+        <span class="n">rho_radar</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">dask_out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The correlations for radar have to be calculated over all cascades and all goback hours. At the same time we also need to adjust the radar rho to make the AR model stable (from STEPS codes).</p>
+<p>Here are the examples (2 hrs extrapolation, with cascades 2, 4 and 6) of the spatial correlation over different cascades, we noticed that the extrapolation scheme has little skill over small scales:</p>
+<a class="reference internal image-reference" href="_images/corr_radar_cascade2_202003090500.png"><img alt="_images/corr_radar_cascade2_202003090500.png" src="_images/corr_radar_cascade2_202003090500.png" style="width: 250px;" /></a>
+<a class="reference internal image-reference" href="_images/corr_radar_cascade4_202003090500.png"><img alt="_images/corr_radar_cascade4_202003090500.png" src="_images/corr_radar_cascade4_202003090500.png" style="width: 250px;" /></a>
+<a class="reference internal image-reference" href="_images/corr_radar_cascade6_202003090500.png"><img alt="_images/corr_radar_cascade6_202003090500.png" src="_images/corr_radar_cascade6_202003090500.png" style="width: 250px;" /></a>
+<p>The full gallery can be found here <a class="reference download internal" download="" href="_downloads/27f1ad1d1abcba0371a14bfe4833810a/corr_radar.tar.gz"><code class="xref download docutils literal notranslate"><span class="pre">radar</span> <span class="pre">correlation</span> <span class="pre">gallery</span></code></a>. Note that the output <em>rho_radar</em> has the dimension of <em>(cascades, time, x, y)</em>, the first <em>time</em> (e.g., <em>rho_radar[cascades, 0, x, y]</em>) indicates the most recent extrapolation (e.g., t-1h).</p>
+<p>Note that it does not matter whether the temporal correlation is computed through correlation or FSS, the sptail correlation is always carried out using the correlation index.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Calculate the correlation for radar at T0</a><ul>
+<li><a class="reference internal" href="#temporal-correlation">Temporal correlation</a><ul>
+<li><a class="reference internal" href="#using-correlations">Using correlations</a></li>
+<li><a class="reference internal" href="#using-fss">Using FSS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#spatial-correlation">Spatial correlation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="decomposition.html"
+                        title="previous chapter">Data decomposition</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="nwp_corr_t0.html"
+                        title="next chapter">Calculate the correlation for NWP at T0</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/radar_corr_t0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="nwp_corr_t0.html" title="Calculate the correlation for NWP at T0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="decomposition.html" title="Data decomposition"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, sijin.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,129 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Semi-Lagrangian extrapolation &#8212; run_raincast_doc 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Data decomposition" href="decomposition.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="decomposition.html" title="Data decomposition"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="semi-lagrangian-extrapolation">
+<h1>Semi-Lagrangian extrapolation<a class="headerlink" href="#semi-lagrangian-extrapolation" title="Permalink to this headline">¶</a></h1>
+<p>We can run the following codes to get the extrapolated radar image:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">timestep</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">R_out</span> <span class="o">=</span> <span class="n">semilagrangian</span><span class="o">.</span><span class="n">extrapolate</span><span class="p">(</span>
+    <span class="n">R</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">timestep</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">,</span> <span class="o">**</span><span class="n">extrap_kwargs</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">R_out</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">R_out</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
+<span class="n">skip</span> <span class="o">=</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">V</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">V</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="n">skip</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="n">skip</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Optical Flow&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/Screenshot_from_2020-04-21_14-33-11.png"><img alt="_images/Screenshot_from_2020-04-21_14-33-11.png" src="_images/Screenshot_from_2020-04-21_14-33-11.png" style="width: 750px;" /></a>
+<p>In RainCast, the historical radar data  is extrapolated to the RainCast analysis time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">file_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ar_order</span><span class="p">):</span>
+    <span class="n">R_radar</span><span class="p">[</span><span class="n">file_index</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">nowcast_extrapolation</span><span class="o">.</span><span class="n">run_extrapolation</span><span class="p">(</span>
+        <span class="n">extrapolator_method</span><span class="p">,</span> <span class="n">R_radar</span><span class="p">[</span><span class="n">file_index</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">V</span><span class="p">,</span> <span class="n">extrap_kwargs</span><span class="p">,</span>
+        <span class="n">ar_order</span><span class="o">=</span><span class="n">ar_order</span><span class="p">,</span> <span class="n">file_index</span><span class="o">=</span><span class="n">file_index</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It is worthwhile to note that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>the input <em>R_radar</em> (<em>[time, x, y]</em>) starts from the goback hours (e.g., 2 hours ago) and ends at the analysis time.</li>
+<li>In contrast, the output <em>R_radar</em> (<em>[time, x, y]</em>) all the data are valid at the same time (the RainCast analysis time), where the data with the 1st time (e.g., <em>R_radar[0, :, :]</em>) is the extrapolation from the goback hours (e.g., 2 hours ago), and the one with the 2nd time (e.g., <em>R_radar[1, :, :]</em>) is the extrapolation from the second goback hours (e.g., 1 hour ago), and the last one (e.g., <em>R_radar[2, :, :]</em>) is the observation (no extrapolation applied).</li>
+</ul>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="decomposition.html"
+                        title="previous chapter">Data decomposition</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/semilagrangian.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="decomposition.html" title="Data decomposition"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, sijin.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>

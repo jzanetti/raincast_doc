@@ -1,0 +1,153 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Regrdding NWP forecasts &#8212; run_raincast_doc 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Setup the working directory" href="working_dir.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="working_dir.html" title="Setup the working directory"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="regrdding-nwp-forecasts">
+<h1>Regrdding NWP forecasts<a class="headerlink" href="#regrdding-nwp-forecasts" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="obtain-the-target-latitude-and-longitude">
+<h2>Obtain the target latitude and longitude<a class="headerlink" href="#obtain-the-target-latitude-and-longitude" title="Permalink to this headline">¶</a></h2>
+<p>First the target latitude and longtiude are read from the grid file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid_lat</span><span class="p">,</span> <span class="n">grid_lon</span> <span class="o">=</span> \
+    <span class="n">raincast_regrid</span><span class="o">.</span><span class="n">read_grid</span><span class="p">(</span><span class="n">griddata_meta</span><span class="p">[</span><span class="s1">&#39;grid_path&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Both the <em>grid_lat</em> and <em>grid_lon</em> must be two dimension arrays, e.g.,:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">grid_lat</span>
+<span class="go">masked_array(</span>
+<span class="go">  data=[[-50.38595 , -50.387203, -50.38843 , ..., -49.3667  , -49.359264,</span>
+<span class="go">         -49.351803],</span>
+<span class="go">        [-50.348835, -50.350094, -50.351322, ..., -49.330265, -49.32283 ,</span>
+<span class="go">         -49.315376],</span>
+<span class="go">        [-50.311733, -50.31298 , -50.31421 , ..., -49.29383 , -49.286407,</span>
+<span class="go">         -49.27895 ],</span>
+<span class="go">        ...,</span>
+<span class="go">        [-31.644207, -31.6451  , -31.64598 , ..., -30.915848, -30.910519,</span>
+<span class="go">         -30.905174],</span>
+<span class="go">        [-31.60799 , -31.608887, -31.60976 , ..., -30.88012 , -30.874798,</span>
+<span class="go">         -30.869457],</span>
+<span class="go">        [-31.571793, -31.572685, -31.573563, ..., -30.844418, -30.839085,</span>
+<span class="go">         -30.833748]],</span>
+<span class="go">  mask=False,</span>
+<span class="go">  fill_value=1e+20,</span>
+<span class="go">  dtype=float32)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="nwp-forecasts-metadata">
+<h2>NWP forecasts metadata<a class="headerlink" href="#nwp-forecasts-metadata" title="Permalink to this headline">¶</a></h2>
+<p>The program figures out where to get the NWP forecasts based on this metadata file (at MetService, this file is created when the NWP data is downloaded from AWS), the format of the metadata file is something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span><span class="p">:</span>
+  <span class="n">analysis_time</span><span class="p">:</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">08_12</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>
+  <span class="n">model</span><span class="p">:</span> <span class="n">nz4kmN</span><span class="o">-</span><span class="n">NCEP</span>
+  <span class="n">reference_model_path</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">szhang</span><span class="o">/</span><span class="n">eclipse</span><span class="o">-</span><span class="n">workspace</span><span class="o">/</span><span class="n">raincast_test33_testdata</span><span class="o">/</span><span class="n">download</span><span class="o">/</span><span class="n">nwp</span><span class="o">/</span><span class="n">wrf</span><span class="o">/</span><span class="n">nz4kmN</span><span class="o">-</span><span class="n">NCEP</span><span class="o">/</span><span class="mi">2020030812</span><span class="o">/</span><span class="n">nz4kmN</span><span class="o">-</span><span class="n">NCEP_02_20030812_013</span><span class="o">.</span><span class="mf">00.</span><span class="n">grb</span>
+<span class="n">fcst_length</span><span class="p">:</span> <span class="mi">180</span>
+<span class="n">raincast_time_interval_in_mins</span><span class="p">:</span> <span class="mi">60</span>
+<span class="n">nwp_start</span><span class="p">:</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">09_02</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">nwp_end</span><span class="p">:</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">09_07</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">raincast_analysis_time</span><span class="p">:</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">09_05</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>
+</pre></div>
+</div>
+<p>In the above example, the NWP data valid between 02 UTC and 07 UTC will be used. The analysis time for NWP and RainCast are 12 UTC (-day) and 05 UTC, respectively</p>
+</div>
+<div class="section" id="radar-data">
+<h2>Radar data<a class="headerlink" href="#radar-data" title="Permalink to this headline">¶</a></h2>
+<p>We always need to go back at least 2 hours to regrid the radar data since the optical flow requires at least two radar images.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Regrdding NWP forecasts</a><ul>
+<li><a class="reference internal" href="#obtain-the-target-latitude-and-longitude">Obtain the target latitude and longitude</a></li>
+<li><a class="reference internal" href="#nwp-forecasts-metadata">NWP forecasts metadata</a></li>
+<li><a class="reference internal" href="#radar-data">Radar data</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="working_dir.html"
+                        title="previous chapter">Setup the working directory</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/regridding_nwp.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="working_dir.html" title="Setup the working directory"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, sijin.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,241 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Locate the input data &#8212; run_raincast_doc 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Optical Flow" href="optical_flow.html" />
+    <link rel="prev" title="Regrdding NWP forecasts" href="regridding_nwp.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="optical_flow.html" title="Optical Flow"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="regridding_nwp.html" title="Regrdding NWP forecasts"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="locate-the-input-data">
+<h1>Locate the input data<a class="headerlink" href="#locate-the-input-data" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="locate-radar-data">
+<h2>Locate radar data<a class="headerlink" href="#locate-radar-data" title="Permalink to this headline">¶</a></h2>
+<p>First we have to go back 2 hours (there are a total of 3 hrs data considering the data for the current analysis):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raincast_analysis_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">radar_data_source</span> <span class="o">=</span> <span class="s1">&#39;/tmp/raincast/download/radar/regrid&#39;</span>
+<span class="n">RADAR_FILENAME</span> <span class="o">=</span> <span class="s1">&#39;cappi_reflectivity_</span><span class="si">{valid_time}</span><span class="s1">.nc&#39;</span>
+<span class="n">accum_len_in_min</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">radar_num_pre_files</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">fns_radar</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">find_by_date</span><span class="p">(</span>
+    <span class="n">raincast_analysis_date</span><span class="p">,</span> <span class="n">radar_data_source</span><span class="p">,</span>
+    <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">RADAR_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">valid_time</span><span class="o">=</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H%M&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;nc&#39;</span><span class="p">,</span>
+    <span class="n">accum_len_in_min</span><span class="p">,</span> <span class="n">num_prev_files</span><span class="o">=</span><span class="n">radar_num_pre_files</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Through the above codes, we have the output <em>fns_radar</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fns_radar</span> <span class="o">=</span>
+    <span class="p">([</span><span class="s1">&#39;/tmp/raincast/download/radar/regrid/cappi_reflectivity_202003090300.nc&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;/tmp/raincast/download/radar/regrid/cappi_reflectivity_202003090400.nc&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;/tmp/raincast/download/radar/regrid//cappi_reflectivity_202003090500.nc&#39;</span><span class="p">],</span>
+     <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+      <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+      <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="locate-nwp-forecasts-data">
+<h2>Locate NWP forecasts data<a class="headerlink" href="#locate-nwp-forecasts-data" title="Permalink to this headline">¶</a></h2>
+<p>Still, assuming that the RainCast analysis time is 05 UTC 9 Mar 2020, the following codes get the required NWP data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raincast_analysis_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">model_data_source</span> <span class="o">=</span> <span class="s1">&#39;/tmp/raincast/download/nwp/regrid/nz4kmN-NCEP/&#39;</span>
+<span class="n">model_analysis_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">WRF_FILENAME</span> <span class="o">=</span> <span class="s1">&#39;wrf_hourly_</span><span class="si">{model_name}</span><span class="s1">_d02_</span><span class="si">{valid_time}</span><span class="s1">&#39;</span>
+<span class="n">accum_len_in_min</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">n_leadtimes</span> <span class="o">=</span> <span class="mi">120</span>
+
+<span class="n">fns_model</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">find_by_date</span><span class="p">(</span>
+    <span class="n">raincast_analysis_date</span><span class="p">,</span> <span class="n">model_data_source</span><span class="p">,</span>
+    <span class="n">model_analysis_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">),</span>
+    <span class="n">WRF_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
+                        <span class="n">valid_time</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">_%H:%M:%S&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;nc&#39;</span><span class="p">,</span> <span class="n">accum_len_in_min</span><span class="p">,</span> <span class="n">num_prev_files</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">num_next_files</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">n_leadtimes</span><span class="o">/</span><span class="n">accum_len_in_min</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The output <em>fns_model</em> is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fns_model</span> <span class="o">=</span>
+    <span class="p">([</span><span class="s1">&#39;/tmp/raincast/download/nwp/regrid/nz4kmN-NCEP/2020030812/wrf_hourly_nz4kmN-NCEP_d02_2020-03-09_04:00:00.nc&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;/tmp/raincast/download/nwp/regrid/nz4kmN-NCEP/2020030812/wrf_hourly_nz4kmN-NCEP_d02_2020-03-09_05:00:00.nc&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;/tmp/raincast/download/nwp/regrid/nz4kmN-NCEP/2020030812/wrf_hourly_nz4kmN-NCEP_d02_2020-03-09_06:00:00.nc&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;/tmp/raincast/download/nwp/regrid/nz4kmN-NCEP/2020030812/wrf_hourly_nz4kmN-NCEP_d02_2020-03-09_07:00:00.nc&#39;</span><span class="p">],</span>
+     <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+      <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+      <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+      <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>Apparently the unit from NWP forecasts is <em>mm/h</em>, however RainCast runs at the unit of <em>dB</em>, therefore both the NWP data and reference NWP data are converted to <em>dB</em></p>
+</div>
+<div class="section" id="reference-nwp-data">
+<h2>Reference NWP data<a class="headerlink" href="#reference-nwp-data" title="Permalink to this headline">¶</a></h2>
+<p>We also need to have reference NWP data to make the radar data having the similar magnitudes/scales, so the reference NWP has the same timestep as radar data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fns_model_ref</span> <span class="o">=</span>
+    <span class="p">([</span><span class="s1">&#39;/tmp/raincast/download/nwp/regrid/nz4kmN-NCEP/2020030812/wrf_hourly_nz4kmN-NCEP_d02_2020-03-09_02:00:00.nc&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;/tmp/raincast/download/nwp/regrid/nz4kmN-NCEP/2020030812/wrf_hourly_nz4kmN-NCEP_d02_2020-03-09_03:00:00.nc&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;/tmp/raincast/download/nwp/regrid/nz4kmN-NCEP/2020030812/wrf_hourly_nz4kmN-NCEP_d02_2020-03-09_04:00:00.nc&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;/tmp/raincast/download/nwp/regrid/nz4kmN-NCEP/2020030812/wrf_hourly_nz4kmN-NCEP_d02_2020-03-09_05:00:00.nc&#39;</span><span class="p">],</span>
+     <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+     <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+     <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+     <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="convert-data-to-db">
+<h2>Convert data to <em>dB</em><a class="headerlink" href="#convert-data-to-db" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="nwp-forecasts">
+<h3>NWP forecasts<a class="headerlink" href="#nwp-forecasts" title="Permalink to this headline">¶</a></h3>
+<p>Apparently the unit from NWP forecasts is <em>mm/h</em>, however RainCast runs at the unit of <em>dB</em>, therefore both the NWP data and reference NWP data are converted to <em>dB</em> using the following subroutine:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">prepare_raincast_inputs</span><span class="p">(</span><span class="n">R_steps</span><span class="p">,</span> <span class="n">metadata_steps</span><span class="p">,</span> <span class="n">thres</span><span class="o">=</span><span class="mf">0.001</span><span class="p">):</span>
+    <span class="n">R_steps</span><span class="p">,</span> <span class="n">metadata_steps</span> <span class="o">=</span> <span class="n">transformation</span><span class="o">.</span><span class="n">dB_transform</span><span class="p">(</span>
+        <span class="n">R_steps</span><span class="p">,</span> <span class="n">metadata_steps</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">thres</span><span class="p">,</span> <span class="n">zerovalue</span><span class="o">=-</span><span class="mf">15.0</span><span class="p">)</span>
+    <span class="c1"># Set missing values with the fill value</span>
+    <span class="n">R_steps</span><span class="p">[</span><span class="o">~</span><span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">R_steps</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">15.0</span>
+    <span class="k">return</span> <span class="n">R_steps</span><span class="p">,</span> <span class="n">metadata_steps</span>
+</pre></div>
+</div>
+<p>The following gives an example for the NWP forecasts before and after the conversion</p>
+<a class="reference internal image-reference" href="_images/Screenshot_from_2020-04-21_12-50-40.png"><img alt="_images/Screenshot_from_2020-04-21_12-50-40.png" src="_images/Screenshot_from_2020-04-21_12-50-40.png" style="width: 300px;" /></a>
+<a class="reference internal image-reference" href="_images/Screenshot_from_2020-04-21_12-56-43.png"><img alt="_images/Screenshot_from_2020-04-21_12-56-43.png" src="_images/Screenshot_from_2020-04-21_12-56-43.png" style="width: 300px;" /></a>
+<p>The output from this subroutine is stored in a 3D numpy array follows <em>[time, x, y]</em>, where <em>time</em> starts from the RainCast analysis time, and ends at the required prognisos. (For the reference model, it ends at the RainCast analysis time, while starts from the begining of goback hours)</p>
+</div>
+<div class="section" id="rainfall-observation-radar">
+<h3>rainfall observation (radar)<a class="headerlink" href="#rainfall-observation-radar" title="Permalink to this headline">¶</a></h3>
+<p>For radar data, first the <em>dBZ</em> is converted to <em>mm/h</em> using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">R_radar</span><span class="p">,</span> <span class="n">metadata_radar</span> <span class="o">=</span> <span class="n">conversion</span><span class="o">.</span><span class="n">to_rainrate</span><span class="p">(</span><span class="n">R_radar</span><span class="p">,</span> <span class="n">metadata_radar</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/Screenshot_from_2020-04-21_13-03-45.png"><img alt="_images/Screenshot_from_2020-04-21_13-03-45.png" src="_images/Screenshot_from_2020-04-21_13-03-45.png" style="width: 300px;" /></a>
+<a class="reference internal image-reference" href="_images/Screenshot_from_2020-04-21_13-00-03.png"><img alt="_images/Screenshot_from_2020-04-21_13-00-03.png" src="_images/Screenshot_from_2020-04-21_13-00-03.png" style="width: 300px;" /></a>
+<p>then the radar data in <em>mm/h</em> is matched with the reference NWP data using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">R_radar</span><span class="p">,</span> <span class="n">radar_mask</span> <span class="o">=</span> <span class="n">matching_radar_nwp_cdf</span><span class="p">(</span><span class="n">R_radar</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">R_model_ref</span><span class="p">))</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/Screenshot_from_2020-04-21_13-00-03.png"><img alt="_images/Screenshot_from_2020-04-21_13-00-03.png" src="_images/Screenshot_from_2020-04-21_13-00-03.png" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/Screenshot_from_2020-04-21_13-11-45.png"><img alt="_images/Screenshot_from_2020-04-21_13-11-45.png" src="_images/Screenshot_from_2020-04-21_13-11-45.png" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/Screenshot_from_2020-04-21_13-13-12.png"><img alt="_images/Screenshot_from_2020-04-21_13-13-12.png" src="_images/Screenshot_from_2020-04-21_13-13-12.png" style="width: 200px;" /></a>
+<p>the radar derived rain then is combined with NWP data (in the area where radar data is masked) and then they are converted back to <em>dB</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">R_radar</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">R_radar</span><span class="p">))]</span> <span class="o">=</span> <span class="n">R_model_ref</span><span class="p">[</span>
+    <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">R_radar</span><span class="p">))]</span>
+
+<span class="k">if</span> <span class="n">rainrate_threshold</span><span class="p">:</span>
+    <span class="n">R_radar</span><span class="p">[</span><span class="n">R_radar</span> <span class="o">&lt;</span> <span class="n">rainrate_threshold</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="n">R_radar</span><span class="p">,</span> <span class="n">metadata_radar</span> <span class="o">=</span> <span class="n">raincast_utils</span><span class="o">.</span><span class="n">prepare_raincast_inputs</span><span class="p">(</span>
+    <span class="n">R_radar</span><span class="p">,</span> <span class="n">metadata_radar</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/Screenshot_from_2020-04-21_13-20-59.png"><img alt="_images/Screenshot_from_2020-04-21_13-20-59.png" src="_images/Screenshot_from_2020-04-21_13-20-59.png" style="width: 350px;" /></a>
+<p>After the conversion, similar to <em>R_model</em>, <em>R_radar</em> is stored in a 3D array as <em>[time, x, y]</em>, where <em>time</em> ends at the RainCast analysis time and starts from the beginning of goback hours (e.g. 2 hours ago).</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Locate the input data</a><ul>
+<li><a class="reference internal" href="#locate-radar-data">Locate radar data</a></li>
+<li><a class="reference internal" href="#locate-nwp-forecasts-data">Locate NWP forecasts data</a></li>
+<li><a class="reference internal" href="#reference-nwp-data">Reference NWP data</a></li>
+<li><a class="reference internal" href="#convert-data-to-db">Convert data to <em>dB</em></a><ul>
+<li><a class="reference internal" href="#nwp-forecasts">NWP forecasts</a></li>
+<li><a class="reference internal" href="#rainfall-observation-radar">rainfall observation (radar)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="regridding_nwp.html"
+                        title="previous chapter">Regrdding NWP forecasts</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="optical_flow.html"
+                        title="next chapter">Optical Flow</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/locate_input.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="optical_flow.html" title="Optical Flow"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="regridding_nwp.html" title="Regrdding NWP forecasts"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, sijin.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>

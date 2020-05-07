@@ -1,0 +1,234 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to RainCast documentation &#8212; run_raincast_doc 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Dependancies" href="dependancies.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dependancies.html" title="Dependancies"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-raincast-documentation">
+<h1>Welcome to RainCast documentation<a class="headerlink" href="#welcome-to-raincast-documentation" title="Permalink to this headline">¶</a></h1>
+<p><strong>RainCast</strong> is a software producing the rapid refresh seamless rainfall forecasting by combining rainfall observation (extrapolation) and NWP</p>
+<ul class="simple">
+<li>Release: 0.0.1</li>
+<li>Date: 2020-04-19</li>
+</ul>
+<p>This package is developed by New Zealand Meteorological Service</p>
+<p>Questions go to: <a class="reference external" href="mailto:sijin&#46;zhang&#37;&#52;&#48;metservice&#46;com">sijin<span>&#46;</span>zhang<span>&#64;</span>metservice<span>&#46;</span>com</a></p>
+<div class="topic">
+<p class="topic-title">this software is capable of :</p>
+<ul class="simple">
+<li>producing the extrapolration based nowcasts using the STEPS algorithm</li>
+<li>merging the nowcasts and NWP using the STEPS algorithm</li>
+<li>blending different NWP sources</li>
+<li>enhancing the probability forecasts using the neighborhood approach</li>
+<li>statistically downscaling the precipitation forecasts.</li>
+</ul>
+</div>
+<div class="section" id="about-raincast">
+<h2>About RainCast<a class="headerlink" href="#about-raincast" title="Permalink to this headline">¶</a></h2>
+<p><strong>RainCast</strong> is short for Rainfall foreCasting system, which combines different sources of forecasts together using the advanced spectral analysis technology. This system is designed to be run hourly (or even subhourly) to provide the most updated rainfall information.</p>
+<ul class="simple">
+<li>Over a short period (e.g., when the forecast lead time is less than 6 hours), it is expected that the incorporation of observation would improve the skill of forecasts,</li>
+<li>After the first several hours, most additional values added by RainCast come from the enhanced neighborhood probability approach</li>
+<li>it is always recommended to run RainCast with multiple NWP sources (e.g., HRRR or any global NWPs)</li>
+</ul>
+<p>RainCast uses much less computational resources than a full rapid updating forecasting system like HRRR (NOAA) or UKV (UK MetOffice), and only focuses on precipitation. Anyone with a reasonable laptop should be able to use this.</p>
+<p>This page is created for any developers/collaborators to get familiar with RainCast</p>
+<div class="section" id="acknowledgements">
+<h3>Acknowledgements:<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h3>
+<p>Australian Bureau of Meteorology, UK MetOffice</p>
+</div>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dependancies.html">   dependancies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conda_env.html">   conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_install.html">   docker</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="sample-workflow">
+<h2>Sample workflow<a class="headerlink" href="#sample-workflow" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="preparation">
+<h3>Preparation<a class="headerlink" href="#preparation" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="create_grid_file.html">   Creating grid file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input_data.html">   Installing input dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="working_dir.html">   Setup working directory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="regridding_nwp.html">   Regriding the inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="locate_input.html">   Locate the input dataset</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="radar-extrapolation">
+<h3>Radar extrapolation<a class="headerlink" href="#radar-extrapolation" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="optical_flow.html">   Optical Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="semilagrangian.html">   Semi-lagrangian extrapolation</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="spectral-decomposition">
+<h3>Spectral decomposition<a class="headerlink" href="#spectral-decomposition" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="decomposition.html">   Decomposition</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="correlation-at-t0">
+<h3>Correlation at T0<a class="headerlink" href="#correlation-at-t0" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="radar_corr_t0.html">   Radar correlations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nwp_corr_t0.html">   NWP correlations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="diff_radar_nwp_corr_t0.html">   Difference between NWP and radar</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="climatological-regression-for-nwp-and-radar-forecasts">
+<h3>Climatological regression for NWP and radar forecasts<a class="headerlink" href="#climatological-regression-for-nwp-and-radar-forecasts" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="weights.html">   Weights for NWP, radar and nosies</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="noises">
+<h3>Noises<a class="headerlink" href="#noises" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="noise.html">   Create stochastic noise</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="blending-forecast">
+<h3>Blending forecast<a class="headerlink" href="#blending-forecast" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="blend.html">   forecasts blending</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="super-ensemble">
+<h3>Super Ensemble<a class="headerlink" href="#super-ensemble" title="Permalink to this headline">¶</a></h3>
+<p>RainCast is able to blend different forecasts together and create the best possible (statistically) combined forecast.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="super_prepare.html">   Prepare the inputs for super ensemble</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to RainCast documentation</a><ul>
+<li><a class="reference internal" href="#about-raincast">About RainCast</a><ul>
+<li><a class="reference internal" href="#acknowledgements">Acknowledgements:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#sample-workflow">Sample workflow</a><ul>
+<li><a class="reference internal" href="#preparation">Preparation</a></li>
+<li><a class="reference internal" href="#radar-extrapolation">Radar extrapolation</a></li>
+<li><a class="reference internal" href="#spectral-decomposition">Spectral decomposition</a></li>
+<li><a class="reference internal" href="#correlation-at-t0">Correlation at T0</a></li>
+<li><a class="reference internal" href="#climatological-regression-for-nwp-and-radar-forecasts">Climatological regression for NWP and radar forecasts</a></li>
+<li><a class="reference internal" href="#noises">Noises</a></li>
+<li><a class="reference internal" href="#blending-forecast">Blending forecast</a></li>
+<li><a class="reference internal" href="#super-ensemble">Super Ensemble</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dependancies.html"
+                        title="next chapter">Dependancies</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dependancies.html" title="Dependancies"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, sijin.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>

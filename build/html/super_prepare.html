@@ -1,0 +1,137 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Inputs for creating super ensemble &#8212; run_raincast_doc 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Blending different forecasting components" href="blend.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="blend.html" title="Blending different forecasting components"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inputs-for-creating-super-ensemble">
+<h1>Inputs for creating super ensemble<a class="headerlink" href="#inputs-for-creating-super-ensemble" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuration-file">
+<h2>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>Super ensemble does not need a seperate configuration file, however the normal RainCast configuration file must be provided:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sample_raincast_conf</span> <span class="o">=</span> <span class="n">get_configs</span><span class="o">.</span><span class="n">get_raincast_config</span><span class="p">(</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">raincast_config_prefix</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">{}</span><span class="s1">.yaml&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>However, the normal RainCast configuration file must be adjusted, e.g., we only leave the probability and determinstic visualization on:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">enable_vis</span><span class="p">[</span><span class="s1">&#39;postprocess&#39;</span><span class="p">][</span><span class="s1">&#39;allmembers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">enable_vis</span><span class="p">[</span><span class="s1">&#39;postprocess&#39;</span><span class="p">][</span><span class="s1">&#39;probability&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">enable_vis</span><span class="p">[</span><span class="s1">&#39;postprocess&#39;</span><span class="p">][</span><span class="s1">&#39;determinstic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">enable_vis</span><span class="p">[</span><span class="s1">&#39;postprocess&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">enable_vis</span><span class="p">[</span><span class="s1">&#39;postprocess&#39;</span><span class="p">][</span><span class="s1">&#39;radar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">enable_vis</span><span class="p">[</span><span class="s1">&#39;debug&#39;</span><span class="p">]:</span>
+    <span class="n">enable_vis</span><span class="p">[</span><span class="s1">&#39;debug&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="weights-for-individual-forecast">
+<h2>Weights for individual forecast<a class="headerlink" href="#weights-for-individual-forecast" title="Permalink to this headline">¶</a></h2>
+<p>The selected NWPs skills (with FSS) are calculated and normalized at the analysis time to determine the weights for different models. For example, we can get:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;nz4kmN-NCEP&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;nz4kmN-ECMWF-SIGMA&#39;</span><span class="p">:</span> <span class="mf">0.53</span><span class="p">,</span> <span class="s1">&#39;nz4kmN-UKMO&#39;</span><span class="p">:</span> <span class="mf">0.59</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>We also add the raw data as members of superensemble:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># the raw model would take the half weights as its STEPS out</span>
+<span class="n">cur_weight</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">weights_dict</span><span class="p">[</span><span class="n">cur_model</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">cur_steps_out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">cur_model_out</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span>
+    <span class="n">cur_model_out</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span>
+    <span class="n">cur_weight</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Inputs for creating super ensemble</a><ul>
+<li><a class="reference internal" href="#configuration-file">Configuration file</a></li>
+<li><a class="reference internal" href="#weights-for-individual-forecast">Weights for individual forecast</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="blend.html"
+                        title="previous chapter">Blending different forecasting components</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/super_prepare.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="blend.html" title="Blending different forecasting components"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, sijin.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>

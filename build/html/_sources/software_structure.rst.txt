@@ -1,0 +1,8 @@
+Software structure
+=======
+This page is created for any developers/collaborators to get familiar with RainCast
+
+General workflow
+^^^^^^^^^^^^^
+
+

@@ -1,0 +1,259 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Weights and regression for different RainCast component &#8212; run_raincast_doc 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Stochastic noise" href="noise.html" />
+    <link rel="prev" title="The skill difference between NWP and radar extrapolation at T0" href="diff_radar_nwp_corr_t0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="noise.html" title="Stochastic noise"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="diff_radar_nwp_corr_t0.html" title="The skill difference between NWP and radar extrapolation at T0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="weights-and-regression-for-different-raincast-component">
+<h1>Weights and regression for different RainCast component<a class="headerlink" href="#weights-and-regression-for-different-raincast-component" title="Permalink to this headline">¶</a></h1>
+<p>From here the skills of both NWP and radar extrapolated forecasts are to be regressed towards their climatology, and the weights for them are estimated based on their skills.</p>
+<p>The weight of stochanstic noises is also calculated depending on the skills of NWP and radar.</p>
+<div class="section" id="weight-for-nwp-forecasts">
+<h2>Weight for NWP forecasts<a class="headerlink" href="#weight-for-nwp-forecasts" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>The weights of NWP forecasts (from T0 to T+xhours) are dependant on:</dt>
+<dd><ul class="first last simple">
+<li>its initial skill and</li>
+<li>the skill climatology</li>
+</ul>
+</dd>
+</dl>
+<div class="section" id="climatology">
+<h3>Climatology<a class="headerlink" href="#climatology" title="Permalink to this headline">¶</a></h3>
+<p>First we need to find out what is the climatological skill for NWP forecasts. The climatological skill is cascade dependant, and they are produced at every cycle when we generate the initial skill of NWP at T0. For example, the climatology skill of NWP at the scale 2040 km is located in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">raincast</span> <span class="n">clim</span> <span class="n">directory</span><span class="o">&gt;/&lt;</span><span class="n">model</span> <span class="n">name</span><span class="o">&gt;/</span><span class="n">fss_para_2040km_nwp</span>
+</pre></div>
+</div>
+<p>If the data in the above climotology is less than a certain value, e.g., <em>min_hist_para_len (default: 12)</em>, then an initial climatology skill would be applied:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;512&#39;</span><span class="p">:</span> <span class="mf">0.999</span><span class="p">,</span> <span class="s1">&#39;216&#39;</span><span class="p">:</span> <span class="mf">0.999</span><span class="p">,</span> <span class="s1">&#39;128&#39;</span><span class="p">:</span> <span class="mf">0.85</span><span class="p">,</span> <span class="s1">&#39;64&#39;</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">,</span> <span class="s1">&#39;32&#39;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span> <span class="s1">&#39;16&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that in order to generate less stochastic nosies, the minimum NWP climatology skill is set to 0.5</p>
+</div>
+<div class="section" id="temporal-regression">
+<h3>Temporal regression<a class="headerlink" href="#temporal-regression" title="Permalink to this headline">¶</a></h3>
+<p>The NWP skill is gradually regressed towards its climatology:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">updated_rho</span><span class="p">[</span><span class="s1">&#39;nwp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">regress_nwp_rho_to_climatology</span><span class="p">(</span>
+    <span class="n">regression_opt</span><span class="p">[</span><span class="s1">&#39;nwp&#39;</span><span class="p">],</span>
+    <span class="nb">filter</span><span class="p">,</span> <span class="n">rho_model</span><span class="p">,</span> <span class="n">updated_rho</span><span class="p">[</span><span class="s1">&#39;nwp&#39;</span><span class="p">],</span> <span class="n">clim_rho</span><span class="p">[</span><span class="s1">&#39;nwp&#39;</span><span class="p">],</span>
+    <span class="n">tt</span><span class="p">,</span> <span class="n">timestep</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="n">kmperpixel</span><span class="p">,</span> <span class="n">regression_coefficients</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Also how fast it regresses is dependant on the <em>regression_coefficients</em>, the less the value the faster it regresses:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;nwp&#39;</span><span class="p">:</span> <span class="p">{</span><span class="o">=</span>
+    <span class="s1">&#39;512&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">160.0</span><span class="p">,</span> <span class="mf">180.0</span><span class="p">],</span>
+    <span class="s1">&#39;216&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">125.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
+    <span class="s1">&#39;128&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
+    <span class="s1">&#39;64&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="mf">80.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">],</span>
+    <span class="s1">&#39;32&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">60.0</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">],</span>
+    <span class="s1">&#39;16&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">],</span>
+    <span class="p">},</span>
+</pre></div>
+</div>
+<p>There is a need to use two parameters to determine the regression rate, that’s why we see a list of 2 values above instead of just a single value:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">timestep_n</span><span class="o">*</span><span class="n">timestep</span><span class="o">/</span><span class="n">nwp_regress_coefs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> \
+    <span class="p">(</span><span class="mf">2.0</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">timestep_n</span><span class="o">*</span><span class="n">timestep</span><span class="o">/</span><span class="n">nwp_regress_coefs</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="weight-for-radar-extrapolation">
+<h2>Weight for radar extrapolation<a class="headerlink" href="#weight-for-radar-extrapolation" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>The weights of radar forecasts (from T0 to T+xhours) are dependant on:</dt>
+<dd><ul class="first last simple">
+<li>its initial skill</li>
+<li>the skill climatology</li>
+<li>a timing smooth term</li>
+</ul>
+</dd>
+</dl>
+<div class="section" id="id1">
+<h3>Climatology<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>The skill of radar extrapolation climatology is not accumulated over time, instead it is a set of predefined parameters depending on the (1) forecast lead time and (2) spatial scales:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;[60-120]&#39;</span><span class="p">:</span>
+     <span class="p">{</span><span class="s1">&#39;512.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">],</span>
+      <span class="s1">&#39;216.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.06</span><span class="p">],</span>
+      <span class="s1">&#39;128.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span>
+      <span class="s1">&#39;64.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">],</span>
+      <span class="s1">&#39;32.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">],</span>
+      <span class="s1">&#39;16.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">]},</span>
+ <span class="s1">&#39;[121-240]&#39;</span><span class="p">:</span>
+     <span class="p">{</span><span class="s1">&#39;512.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span>
+      <span class="s1">&#39;216.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">],</span>
+      <span class="s1">&#39;128.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">],</span>
+      <span class="s1">&#39;64.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+      <span class="s1">&#39;32.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+      <span class="s1">&#39;16.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]},</span>
+ <span class="s1">&#39;[241-360]&#39;</span><span class="p">:</span>
+     <span class="p">{</span><span class="s1">&#39;512.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+      <span class="s1">&#39;216.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+      <span class="s1">&#39;128.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+      <span class="s1">&#39;64.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+      <span class="s1">&#39;32.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+      <span class="s1">&#39;16.0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]}}</span>
+</pre></div>
+</div>
+<p>There is a program to locate the nearest climatology skill based on the actual lead time and scales of the radar extrapolation:</p>
+</div>
+<div class="section" id="id2">
+<h3>Temporal regression<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>The radar skill (obtained from the previous step) then is regressed towards to its target climatology:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># updated_rho[&#39;radar&#39;][0, :, :, :, :] = rho_radar</span>
+<span class="n">updated_rho</span><span class="p">[</span><span class="s1">&#39;radar&#39;</span><span class="p">][</span><span class="n">tt</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">updated_rho</span><span class="p">[</span><span class="s1">&#39;radar&#39;</span><span class="p">][</span><span class="n">tt</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
+<span class="n">updated_rho</span><span class="p">[</span><span class="s1">&#39;radar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">regress_radar_rho_to_climatology</span><span class="p">(</span>
+    <span class="n">updated_rho</span><span class="p">[</span><span class="s1">&#39;radar&#39;</span><span class="p">],</span> <span class="n">clim_rho</span><span class="p">[</span><span class="s1">&#39;radar&#39;</span><span class="p">],</span> <span class="n">tt</span><span class="p">,</span>
+    <span class="n">timestep</span><span class="p">,</span> <span class="n">regression_coefficients</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">ii</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>How fast the regression would go is dependant on <em>regression_coefficients</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;radar&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">]}</span>
+</pre></div>
+</div>
+<p>Ususally the smaller the coefficients, the faster it would regress.</p>
+</div>
+<div class="section" id="temporal-smoothing">
+<h3>Temporal smoothing<a class="headerlink" href="#temporal-smoothing" title="Permalink to this headline">¶</a></h3>
+<p>From the second time step, the skill of radar extrapolation must be smoothed to avoid the abrupt changes during blending:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">tt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">updated_rho</span><span class="p">[</span><span class="s1">&#39;radar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">smooth_radar_rho_over_time</span><span class="p">(</span>
+        <span class="n">updated_rho</span><span class="p">[</span><span class="s1">&#39;radar&#39;</span><span class="p">],</span> <span class="n">tt</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">ii</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that over the first a few hours, the changes of radar skill may mainly come from the Temporal smoothing instead of the temporal regression</p>
+</div>
+</div>
+<div class="section" id="weight-for-stochastic-noises">
+<h2>Weight for stochastic noises<a class="headerlink" href="#weight-for-stochastic-noises" title="Permalink to this headline">¶</a></h2>
+<p>The weights for stochastic noise is dependant on the weights for NWP and radar. The more skills NWP and radar have, the less weight from the noises:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">updated_weights</span><span class="p">[</span><span class="s1">&#39;noise&#39;</span><span class="p">][</span><span class="n">tt</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+    <span class="mf">1.0</span> <span class="o">-</span> <span class="n">updated_weights</span><span class="p">[</span><span class="s1">&#39;radar&#39;</span><span class="p">][</span><span class="n">tt</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span>
+    <span class="n">updated_weights</span><span class="p">[</span><span class="s1">&#39;nwp&#39;</span><span class="p">][</span><span class="n">tt</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="outputs">
+<h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
+<p>We get the weights from different forecasting approaches (radar, NWP and stochastic noises) stored in a dict:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">updated_weights</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;nwp&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">lead_time</span><span class="p">,</span> <span class="n">cascades</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span>
+    <span class="s1">&#39;radar&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">lead_time</span><span class="p">,</span> <span class="n">cascades</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Weights and regression for different RainCast component</a><ul>
+<li><a class="reference internal" href="#weight-for-nwp-forecasts">Weight for NWP forecasts</a><ul>
+<li><a class="reference internal" href="#climatology">Climatology</a></li>
+<li><a class="reference internal" href="#temporal-regression">Temporal regression</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#weight-for-radar-extrapolation">Weight for radar extrapolation</a><ul>
+<li><a class="reference internal" href="#id1">Climatology</a></li>
+<li><a class="reference internal" href="#id2">Temporal regression</a></li>
+<li><a class="reference internal" href="#temporal-smoothing">Temporal smoothing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#weight-for-stochastic-noises">Weight for stochastic noises</a></li>
+<li><a class="reference internal" href="#outputs">Outputs</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="diff_radar_nwp_corr_t0.html"
+                        title="previous chapter">The skill difference between NWP and radar extrapolation at T0</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="noise.html"
+                        title="next chapter">Stochastic noise</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/weights.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="noise.html" title="Stochastic noise"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="diff_radar_nwp_corr_t0.html" title="The skill difference between NWP and radar extrapolation at T0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">run_raincast_doc 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, sijin.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>
