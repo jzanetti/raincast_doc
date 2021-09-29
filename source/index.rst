@@ -20,7 +20,7 @@ Questions go to: sijin.zhang@metservice.com
 
     * producing the extrapolration based nowcasts using the STEPS algorithm
 
-    * merging the nowcasts and NWP using the STEPS algorithm
+    * merging the nowcasts and NWP
 
     * blending different NWP sources
 
@@ -31,7 +31,7 @@ Questions go to: sijin.zhang@metservice.com
 
 About RainCast
 ^^^^^^^^^^^^^^^^^^^^
-**RainCast** is short for Rainfall foreCasting system, which combines different sources of forecasts together using the advanced spectral analysis technology. This system is designed to be run hourly (or even subhourly) to provide the most updated rainfall information.
+**RainCast** is short for Rainfall foreCasting system, which combines different sources of forecasts together using an advanced spectral analysis technology. This system is designed to be run hourly (or even subhourly) to provide the most updated rainfall information.
 
 * Over a short period (e.g., when the forecast lead time is less than 6 hours), it is expected that the incorporation of observation would improve the skill of forecasts, 
 
@@ -45,7 +45,7 @@ This page is created for any developers/collaborators to get familiar with RainC
 
 Acknowledgements:
 ''''''''''''''''''
-Australian Bureau of Meteorology, UK MetOffice
+Australian Bureau of Meteorology
 
 
 Installation
